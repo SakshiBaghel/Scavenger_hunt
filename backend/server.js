@@ -11,7 +11,7 @@ const app = express();
 const cors = require('cors');
 
 app.use(cors({
-    origin: ['http://localhost:3003', 'http://localhost:3000'], 
+    origin: ['http://localhost:3001', 'http://localhost:3000'], 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
 }));

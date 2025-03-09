@@ -1,20 +1,10 @@
-// const express = require("express");
-// // const { getLiveHunts, getUpcomingEvents, createHunt } = require("../controllers/huntController");
-// const { createHunt } = require("../controllers/huntController");
-
-// const router = express.Router();
-
-// // router.get("/liveHunts", getLiveHunts);
-// // router.get("/upcomingHunts", getUpcomingEvents);
-// router.post("/createHunt", createHunt);
-
-// module.exports = router;
-
 
 const express = require("express");
-const { createHunt } = require("../controllers/huntController");
+const { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle } = require("../controllers/huntController");
 
 const router = express.Router();
+
+
 
 // Debugging middleware (Log request data)
 router.post("/createHunt", async (req, res, next) => {
@@ -25,5 +15,33 @@ router.post("/createHunt", async (req, res, next) => {
         next(error);  // Pass the error to Express error handling
     }
 });
-// router.post("/createHunt", createHunt);
-module.exports = router;
+
+router.get("/liveHunts", async(req, res, next) => {
+    try {
+        console.log("Request received");
+        await getLiveHunts(req, res);
+    } catch (error) {
+        next(error);  // Pass the error to Express error handling
+    }
+});
+
+// fetching upcoming hunts
+router.get("/upcomingHunts", async(req, res, next) => {
+    try {
+        console.log("Request received");
+        await getUpcomingHunts(req, res);
+    } catch (error) {
+        next(error);  // Pass the error to Express error handling
+    }
+});
+
+router.get("/:huntId", async (req, res) =>{
+    try {
+        console.log("Request received join hunt");
+        await displayPuzzle(req, res);
+    } catch (error) {
+        next(error);  // Pass the error to Express error handling
+    }
+
+})
+module.exports = router;    
