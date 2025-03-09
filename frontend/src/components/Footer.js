@@ -6,7 +6,7 @@ const Footer = () => {
         <header>
             <div className="container">
                 <Link to="/">
-                    <h1>Campus-Hunt</h1>
+                    <h1>Footer</h1>
                 </Link>
             </div>
         </header>
