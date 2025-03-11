@@ -41,14 +41,11 @@ const huntSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
-            // location: {
-            //     coordinates: { type: [Number], required: false } // [longitude, latitude]
-            // },
             location: {
                 coordinates: {
                     type: [Number],
-                    default: undefined, // This allows it to be omitted
-                    required: false // Ensure it's optional
+                    default: undefined, 
+                    required: false 
                 }
             },
             

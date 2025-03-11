@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 
 const huntRoutes = require('./routes/huntRoute');
+const playerRoutes = require('./routes/playerRoute');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/hunt', huntRoutes);
+app.use('/api/player', playerRoutes);
 
 // Connect to DB
 mongoose
