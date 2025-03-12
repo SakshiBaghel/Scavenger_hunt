@@ -12,26 +12,26 @@ const playerSchema = new mongoose.Schema({
         required: true
     },
     progress: {
-        puzzleIndex: {
-            type: Number,
-            required: true
-        },
         completedPuzzles: {
+            type: Number,
+            default: 0
+        },
+        score: {
             type: Number,
             default: 0
         }
     },
-    score: {
-        type: Number,
-        default: 10
-    },
-    status: {
-        type: String,
-        enum: ['playing', 'completed', 'mark for later'],
-        default: 'playing'
-    },
+    // status: {
+    //     type: String,
+    //     enum: ['playing', 'completed'],
+    //     default: 'playing'
+    // },
     guesses: [
         {
+            puzzleIndex: { 
+                type: Number, 
+                required: true 
+            }, 
             guessedLocation: {
                 coordinates: { type: [Number], required: false } 
             },
