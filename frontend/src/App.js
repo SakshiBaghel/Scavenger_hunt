@@ -7,6 +7,7 @@ import CreateHunt from './pages/CreateHunt'
 import LiveHunt from './pages/LiveHunt'
 import UpcomingHunt from './pages/UpcomingHunt'
 import JoinHunt from './components/JoinHunt'
+import YourHunt from './pages/YourHunt'
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/LiveHunt" element={<LiveHunt />} />
           <Route path="/UpcomingHunt" element={<UpcomingHunt />} />
           <Route path="/JoinHunt/:huntId" element={<JoinHunt />} />
+          <Route path="/YourHunt/:userId" element={<YourHunt />} />
             
         </Routes>
       </div>

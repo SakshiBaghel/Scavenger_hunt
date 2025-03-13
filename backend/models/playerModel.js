@@ -21,11 +21,6 @@ const playerSchema = new mongoose.Schema({
             default: 0
         }
     },
-    // status: {
-    //     type: String,
-    //     enum: ['playing', 'completed'],
-    //     default: 'playing'
-    // },
     guesses: [
         {
             puzzleIndex: { 
@@ -38,7 +33,11 @@ const playerSchema = new mongoose.Schema({
             imageUrl: {
                 type: String,
                 default: ""
-            } 
+            }, 
+            hintUsed: {
+                type: Number,
+                default: 0
+            }
         }
     ]
 }, { timestamps: true });

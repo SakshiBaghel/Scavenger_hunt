@@ -1,6 +1,6 @@
 
 const express = require("express");
-const { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle } = require("../controllers/huntController");
+const { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle, yourHunt } = require("../controllers/huntController");
 
 const router = express.Router();
 
@@ -39,6 +39,16 @@ router.get("/:huntId", async (req, res) =>{
     try {
         console.log("Request received join hunt");
         await displayPuzzle(req, res);
+    } catch (error) {
+        next(error);  // Pass the error to Express error handling
+    }
+
+})
+
+router.get("/yourHunt/:userId", async (req, res) =>{
+    try {
+        console.log("Request received Your hunt");
+        await yourHunt(req, res);
     } catch (error) {
         next(error);  // Pass the error to Express error handling
     }

@@ -114,4 +114,41 @@ const displayPuzzle = async (req, res) => {
     }
 }; 
 
-module.exports = { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle};
+// const yourHunt = async (req, res) => {
+//     try {
+//         const user = await Hunt.findById(req.params.userId);
+//         if (!user) return res.status(404).json({ error: "User not found" });
+        
+//         res.json({
+//             name: hunt.name,
+//             description: hunt.description,
+//             startTime: hunt.startTime,
+//             endTime: hunt.endTime,
+            
+//         });
+//     } catch (error) {
+//         res.status(500).json({ error: "Internal Server Error" });
+//     }
+// }; 
+
+
+const yourHunt = async (req, res) => {
+    try {
+        const hunts = await Hunt.find({ createdBy: req.params.userId });
+
+        if (!hunts || hunts.length === 0) {
+            return res.status(404).json({ error: "No hunts found for this user" });
+        }
+
+        res.json(hunts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+module.exports = yourHunt;
+
+
+
+module.exports = { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle, yourHunt};
