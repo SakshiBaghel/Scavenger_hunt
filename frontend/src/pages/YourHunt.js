@@ -1,10 +1,14 @@
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 
 function YourHunt() {
   const [hunts, setHunts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const dummyUserId = "67d27807a18ba8e7e700f944"; // Replace with actual user ID when authentication is added
 
@@ -29,8 +33,7 @@ function YourHunt() {
 
   const handleCheckSubmission = (huntId) => {
     console.log(`Checking submission for Hunt ID: ${huntId}`);
-    // You can navigate to a submission page or fetch submission details here
-    // navigate(`CheckSubmission/${huntId}`);
+    navigate(`CheckSubmission/${huntId}`);
   };
 
   return (
