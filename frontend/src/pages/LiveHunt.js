@@ -130,7 +130,7 @@ const LiveHunt = () => {
     }, []);
 
     const handleJoinHunt = async (huntId) => {
-        const dummyPlayerId = "65a3c9c3f1a2b3d4e5f6a7b8"; // Use a fake Player ID for now
+        const dummyPlayerId = "65f8e4d9a1b2c3456789abcd"; // Use a fake Player ID for now
 
         try {
             const response = await fetch(`http://localhost:4000/api/player/createPlayer`, {

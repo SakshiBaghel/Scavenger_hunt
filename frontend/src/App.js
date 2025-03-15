@@ -24,7 +24,6 @@ function App() {
           <Route path="/JoinHunt/:huntId" element={<JoinHunt />} />
           <Route path="/YourHunt/:userId" element={<YourHunt />} />
           <Route path="/CheckSubmission/:huntId" element={<CheckSubmission />} />
-            
         </Routes>
       </div>
       </BrowserRouter>

@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
 function YourHunt() {
   const [hunts, setHunts] = useState([]);
   const [loading, setLoading] = useState(true);

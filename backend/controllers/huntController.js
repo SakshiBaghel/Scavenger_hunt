@@ -1,5 +1,6 @@
 
 const Hunt = require("../models/huntModel");
+const Player = require("../models/playerModel")
 
 // Create a new Hunt
 const createHunt = async (req, res) => {
@@ -114,24 +115,6 @@ const displayPuzzle = async (req, res) => {
     }
 }; 
 
-// const yourHunt = async (req, res) => {
-//     try {
-//         const user = await Hunt.findById(req.params.userId);
-//         if (!user) return res.status(404).json({ error: "User not found" });
-        
-//         res.json({
-//             name: hunt.name,
-//             description: hunt.description,
-//             startTime: hunt.startTime,
-//             endTime: hunt.endTime,
-            
-//         });
-//     } catch (error) {
-//         res.status(500).json({ error: "Internal Server Error" });
-//     }
-// }; 
-
-
 const yourHunt = async (req, res) => {
     try {
         const hunts = await Hunt.find({ createdBy: req.params.userId });
@@ -147,8 +130,55 @@ const yourHunt = async (req, res) => {
     }
 };
 
-module.exports = yourHunt;
+// const submissions = async(req, res) => {
+//     try {
+//         const { huntId } = req.params;
+//         console.log("huntID: ",huntID)
+//         // Find the hunt and ensure the logged-in user is the creator
+//         const hunt = await Hunt.findById(huntId).populate('createdBy');
+//         if (!hunt) return res.status(404).json({ message: "Hunt not found" });
+
+//         // Get players' guesses for this hunt
+//         const players = await Player.find({ hunt: huntId })
+//             .populate('user', 'name email') // Populate user details
+//             .select('user guesses');
+
+//         res.json(players);
+//     } catch (error) {
+//         res.status(500).json({ error: "Internal Server Error" });
+//     }
+// }
+
+const submissions = async (req, res) => {
+    try {
+        const { huntId } = req.params;
+
+        // Hunt ke saare players fetch karo
+        const players = await Player.find({ hunt: huntId }).select('user guesses');
+
+        // Sirf wahi players jinke guesses update hue hai
+        const updatedPlayers = players.filter(player => player.guesses.length > 0);
+
+        // Table format ke liye JSON data tayar karna
+        const tableData = updatedPlayers.map(player => ({
+            userId: player.user,  // Player ka userId
+            guesses: player.guesses.map(guess => ({
+                puzzleIndex: guess.puzzleIndex,
+                guessedLocation: guess.guessedLocation?.coordinates || "N/A",
+                imageUrl: guess.imageUrl || "N/A",
+                status: guess.hintUsed > 0 ? "Hint Used" : "Pending"
+            }))
+        }));
+
+        res.json({ table: tableData });
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+
+}
 
 
 
-module.exports = { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle, yourHunt};
+
+
+module.exports = { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle, yourHunt, submissions};
