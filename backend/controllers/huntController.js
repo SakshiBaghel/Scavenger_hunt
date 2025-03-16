@@ -1,6 +1,8 @@
+const mongoose = require('mongoose');
 
 const Hunt = require("../models/huntModel");
 const Player = require("../models/playerModel")
+
 
 // Create a new Hunt
 const createHunt = async (req, res) => {
@@ -130,55 +132,149 @@ const yourHunt = async (req, res) => {
     }
 };
 
-// const submissions = async(req, res) => {
+
+// const submissions = async (req, res) => {
 //     try {
 //         const { huntId } = req.params;
-//         console.log("huntID: ",huntID)
-//         // Find the hunt and ensure the logged-in user is the creator
-//         const hunt = await Hunt.findById(huntId).populate('createdBy');
-//         if (!hunt) return res.status(404).json({ message: "Hunt not found" });
+//         // const huntId = "67cd5a7c615a9fc7c706577a";
+//         console.log("huntId: ", huntId)
+//         // Check if huntId is a valid ObjectId
+//         if (!mongoose.Types.ObjectId.isValid(huntId)) {
+//             return res.status(400).json({ error: "Invalid hunt ID" });
+//         }
 
-//         // Get players' guesses for this hunt
-//         const players = await Player.find({ hunt: huntId })
-//             .populate('user', 'name email') // Populate user details
-//             .select('user guesses');
+//         console.log("Request received for Hunt ID:", huntId); // ✅ Debugging
 
-//         res.json(players);
+//         // Fetch players participating in this hunt
+//         const players = await Player.find({ hunt: huntId }).select('user guesses');
+
+//         console.log("Fetched Players:", players); // ✅ Debugging
+
+//         if (players.length === 0) {
+//             return res.json({ table: [] }); // No players found
+//         }
+
+//         // ✅ Filter out players with guesses
+//         const updatedPlayers = players.filter(player => player.guesses.length > 0);
+
+//         console.log("Players with guesses:", updatedPlayers); // ✅ Debugging
+
+//         // ✅ Format data for the table
+//         const tableData = updatedPlayers.map(player => ({
+//             userId: player.user,  // Player's user ID
+//             guesses: player.guesses.map(guess => ({
+//                 puzzleIndex: guess.puzzleIndex,
+//                 guessedLocation: guess.guessedLocation?.coordinates || "N/A",
+//                 imageUrl: guess.imageUrl || "N/A",
+//                 status: guess.hintUsed > 0 ? "Hint Used" : "Pending"
+//             }))
+//         }));
+
+//         res.json({ table: tableData });
 //     } catch (error) {
+//         console.error("Error fetching submissions:", error);
+//         res.status(500).json({ error: "Internal Server Error" });
+//     }
+
+// }
+
+// const submissions = async (req, res) => {
+//     try {
+//         const { huntId } = req.params;
+
+//         if (!huntId) {
+//             return res.status(400).json({ error: "Hunt ID is required" });
+//         }
+
+//         if (!mongoose.Types.ObjectId.isValid(huntId)) {
+//             return res.status(400).json({ error: "Invalid Hunt ID format" });
+//         }
+
+//         console.log("Request received for Hunt ID:", huntId);
+
+//         const players = await Player.find({ hunt: huntId }).select('user guesses');
+
+//         if (!players.length) {
+//             return res.json({ table: [] });
+//         }
+
+//         let table = [];
+
+//         players.forEach(player => {
+//             player.guesses.forEach(guess => {
+//                 table.push({
+//                     userId: player.user,
+//                     puzzleIndex: guess.puzzleIndex,
+//                     puzzle: `Puzzle ${guess.puzzleIndex}`, // Placeholder; modify as per actual data
+//                     guessedImageUrl: guess.imageUrl || "N/A",
+//                     status: guess.status || "Pending",
+//                     action: "Review" // Assuming a default action, modify as needed
+//                 });
+//             });
+//         });
+
+//         res.json({ table });
+//     } catch (error) {
+//         console.error("Error fetching submissions:", error);
 //         res.status(500).json({ error: "Internal Server Error" });
 //     }
 // }
+
 
 const submissions = async (req, res) => {
     try {
         const { huntId } = req.params;
 
-        // Hunt ke saare players fetch karo
+        if (!huntId) {
+            return res.status(400).json({ error: "Hunt ID is required" });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(huntId)) {
+            return res.status(400).json({ error: "Invalid Hunt ID format" });
+        }
+
+        console.log("Request received for Hunt ID:", huntId);
+
+        // Fetch hunt details
+        const hunt = await Hunt.findById(huntId);
+
+        if (!hunt) {
+            return res.status(404).json({ error: "Hunt not found" });
+        }
+
+        // Fetch players participating in the hunt
         const players = await Player.find({ hunt: huntId }).select('user guesses');
 
-        // Sirf wahi players jinke guesses update hue hai
-        const updatedPlayers = players.filter(player => player.guesses.length > 0);
+        if (!players.length) {
+            return res.json({ table: [] });
+        }
 
-        // Table format ke liye JSON data tayar karna
-        const tableData = updatedPlayers.map(player => ({
-            userId: player.user,  // Player ka userId
-            guesses: player.guesses.map(guess => ({
-                puzzleIndex: guess.puzzleIndex,
-                guessedLocation: guess.guessedLocation?.coordinates || "N/A",
-                imageUrl: guess.imageUrl || "N/A",
-                status: guess.hintUsed > 0 ? "Hint Used" : "Pending"
-            }))
-        }));
+        let table = [];
 
-        res.json({ table: tableData });
+        players.forEach(player => {
+            player.guesses.forEach(guess => {
+                const puzzleIndex = guess.puzzleIndex;
+                
+                // Fetch the corresponding puzzle clue
+                const puzzle = hunt.puzzle[puzzleIndex];
+                const clue = puzzle ? puzzle.clue : "Unknown Clue";
+
+                table.push({
+                    userId: player.user,
+                    puzzleIndex: puzzleIndex,
+                    puzzle: clue, // Clue from the hunt
+                    guessedImageUrl: guess.imageUrl || "N/A",
+                    status: guess.status || "Pending",
+                    action: "Review" // Default action, modify as needed
+                });
+            });
+        });
+
+        res.json({ table });
     } catch (error) {
+        console.error("Error fetching submissions:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-
 }
-
-
-
-
 
 module.exports = { createHunt, getLiveHunts, getUpcomingHunts, displayPuzzle, yourHunt, submissions};

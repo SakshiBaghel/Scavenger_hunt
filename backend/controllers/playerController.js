@@ -94,5 +94,48 @@ const submitGuess = async (req, res) => {
     }
 };
 
+const updateAction = async (req, res) => {
+    const { userId, huntId, status } = req.body;
 
-module.exports = { createPlayer, submitGuess };
+    try {
+        // Find the player using userId and huntId
+        const player = await Player.findOne({ user: userId, hunt: huntId });
+
+        if (!player) {
+            return res.status(404).json({ error: "Player not found" });
+        }
+
+        // Find the latest guess (last puzzle attempted)
+        const lastGuess = player.guesses[player.guesses.length - 1];
+
+        if (!lastGuess) {
+            return res.status(400).json({ error: "No guesses found" });
+        }
+
+        if (status === "correct") {
+            // Calculate score (10 - 2 * hintsUsed)
+            const earnedScore = Math.max(10 - (2 * lastGuess.hintUsed), 0);
+
+            // Update progress
+            player.progress.completedPuzzles += 1;
+            player.progress.score += earnedScore;
+
+            // Save the updated player data
+            await player.save();
+
+            return res.json({
+                message: "Answer marked correct, progress updated",
+                completedPuzzles: player.progress.completedPuzzles,
+                totalScore: player.progress.score
+            });
+        } else {
+            // If wrong, do nothing
+            return res.json({ message: "Answer marked wrong, no changes made" });
+        }
+    } catch (error) {
+        console.error("Error updating player progress:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+module.exports = { createPlayer, submitGuess, updateAction};

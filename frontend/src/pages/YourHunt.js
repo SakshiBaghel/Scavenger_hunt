@@ -8,7 +8,7 @@ function YourHunt() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const dummyUserId = "67d27807a18ba8e7e700f944"; // Replace with actual user ID when authentication is added
+  const dummyUserId = "67d579fbed75779ad83d6c28"; // Replace with actual user ID when authentication is added
 
   useEffect(() => {
     const fetchHunts = async () => {

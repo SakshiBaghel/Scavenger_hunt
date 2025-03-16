@@ -23,7 +23,8 @@ function App() {
           <Route path="/UpcomingHunt" element={<UpcomingHunt />} />
           <Route path="/JoinHunt/:huntId" element={<JoinHunt />} />
           <Route path="/YourHunt/:userId" element={<YourHunt />} />
-          <Route path="/CheckSubmission/:huntId" element={<CheckSubmission />} />
+          {/* <Route path="/CheckSubmission/:huntId" element={<CheckSubmission />} /> */}
+          <Route path="/yourHunt/:userId/CheckSubmission/:huntId" element={<CheckSubmission />} />
         </Routes>
       </div>
       </BrowserRouter>

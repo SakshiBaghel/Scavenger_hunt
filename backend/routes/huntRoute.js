@@ -55,7 +55,7 @@ router.get("/yourHunt/:userId", async (req, res) =>{
 
 })
 
-router.get("/submissions/:userId", async (req, res) =>{
+router.get("/submissions/:huntId", async (req, res) =>{
     try {
         console.log("Request received Your hunt");
         await submissions(req, res);
