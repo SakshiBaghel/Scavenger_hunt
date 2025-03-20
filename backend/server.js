@@ -1,26 +1,28 @@
-require('dotenv').config()
+import express from 'express';
+import 'dotenv/config';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+//import { connect } from 'mongoose';
+import connectDB from './config/mongodb.js';
+import authRouter from './routes/authRoutes.js';
+import userRouter from './routes/userRoutes.js';
 
-const express = require('express')
-const mongoose = require('mongoose')
+const app = express();
+const port= process.env.PORT || 4000;
+connectDB();
 
-//express app
-const app = express()
+const allowedOrigins = ['http://localhost:3000'];
+ 
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({origin:allowedOrigins, credentials:true}));
 
-//middleware
-app.use((req, res, next) => {
-    console.log(req.path, req.method)
-})
+//api endpoints
+app.get('/',(req,res)=>res.send('Api is running fineeeee'));
+app.use('/api/auth',authRouter);
+app.use('/api/user',userRouter);
 
-// connect to db
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        // listen for request
-        app.listen(process.env.PORT, ()=>{
-            console.log('connected to db & listening on port 4000!!!')
-        })
-    })
-    .catch((error) => {
-        console.log(error)
-    })
 
+
+app.listen(port,()=>console.log(`Server is running on port ${port}`));
 
