@@ -1,0 +1,48 @@
+.sidebar {
+  height: 100vh;
+  padding-top: 20px;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
+.btn-danger {
+  margin-top: 20px;
+}
+.dashboard-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #f4f4f4;
+}
+
+/* Navbar */
+.navbar {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .nav-item button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar .nav-item button.active {
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+.navbar .btn-danger {
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  padding: 20px;
+  transition: all 0.3s ease-in-out;
+}

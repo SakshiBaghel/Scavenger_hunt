@@ -1,0 +1,336 @@
+body {
+  margin: 0;
+  font-family:'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* UPCOMING HUNTS_______________________ */
+/* 🌟 Full Page Styling */
+.upcoming-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #09090a;
+  text-transform: uppercase;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.no-hunts-message {
+  font-size: 1.2rem;
+  color: #777;
+}
+
+.hunt-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.hunt-card {
+  width: 60%;
+  background: linear-gradient(135deg, #856def, #4ca0ef);
+  color: rgb(5, 3, 95);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.hunt-card:hover {
+  transform: scale(1.05);
+}
+
+.hunt-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #03050d;
+}
+
+.hunt-description {
+  font-size: 1rem;
+  color: #3e95ed;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* _________________________________________ */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+/* General Styling */
+.main-container {
+  margin-bottom: 100px; /* Adjust as needed */
+}
+.hunts-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.hunt-card {
+  background:#F6F8D5;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  width: 280px;
+  text-align: left;
+  align-items: center;  /* Center horizontally */
+    text-align: center; 
+}
+
+.join-btn {
+  background:rgb(255, 132, 0);
+  color: var(--text-color);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.join-btn:hover {
+  background: yellow;
+}
+
+.box-navbar-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #205781, #4F959D, #98D2C0, #F6F8D5);
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.responsive-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.responsive-form {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 600px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Input fields */
+.input, .textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.box-input, .box-textarea {
+  width: calc(50% - 10px); /* Adjust width as needed */
+}
+
+/* Puzzle Blocks */
+.puzzle-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .responsive-form {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .puzzle-block {
+    flex-direction: column;
+  }
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+/* index.css */
+
+/* Container for the entire "boxed" navbar */
+
+/* Each "box" link */
+.box-link {
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+/* Actual box styling */
+.box {
+  width: 140px;
+  height: 100px;
+  background-color: #fff;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #205781;
+  font-weight: bold;
+  font-size: 18px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect for each box */
+.box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Optional icon styling */
+.box-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 8px;
+}
+/* Define your theme colors as CSS variables */
+:root {
+  --primary-color: #205781;
+  --secondary-color: #4F959D;
+  --accent-color: #98D2C0;
+  --light-bg: #F6F8D5;
+}
+
+/* Override Bootstrap primary button using your theme colors */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+/* Customize the navbar with a gradient using your theme colors */
+.navbar {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+/* Override card background to use your soft yellow */
+.card {
+  background-color: var(--light-bg);
+}
+
+/* You can also target other elements as needed */
+a {
+  color: var(--primary-color);
+}
+
+a:hover {
+  color: var(--accent-color);
+}
+
+/* Optional label styling */
+.box-label {
+  font-family: "Roboto", sans-serif;
+}
+/* index.css */
+
+/* Remove any default margin/padding */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* If you only want to remove horizontal scrolling: */
+html, body {
+  overflow-x: hidden; /* This hides the horizontal scroll bar */
+}
+
+/* If you want to remove both scroll bars entirely (horizontal & vertical), use this instead: */
+/*
+html, body {
+  overflow: hidden; 
+}
+*/
+
+/* For Chrome, Safari, and newer Edge (WebKit-based) browsers: */
+body::-webkit-scrollbar {
+  display: none; 
+}
+
+/* For IE, older Edge, and Firefox: */
+body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.hunt-card h3 {
+    font-weight: bold;
+    /* background-color: yellow;  Highlight color */
+
+    padding: 5px;
+    display: inline-block;
+    border-radius: 5px; /* Smooth edges */
+}
+h2 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 28px;
+    /* text-decoration:#007bff; */
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color:rgb(250, 250, 15);
+}
+body {
+  background:linear-gradient(135deg, #205781, #4F959D, #98D2C0, #F6F8D5);
+  /* Gradient left se right jayega */
+  min-height: 100vh; /* Pura screen cover karega */
+  margin: 0;
+  padding: 0;
+}

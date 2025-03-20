@@ -2,20 +2,26 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
-
+const app = express();
 const huntRoutes = require('./routes/huntRoute');
 const playerRoutes = require('./routes/playerRoute');
+const authRoutes = require("./routes/Authroute");
+// app.use("/hunt", require("./components/PrivateRoute"));  // Protected Hunt Pages
 
-const app = express();
+
 
 //  Middleware (Fixed: Added CORS)
 const cors = require('cors');
-
 app.use(cors({
-    origin: ['http://localhost:3001', 'http://localhost:3000'], 
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    credentials: true,
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+    credentials: true
 }));
+// app.use(cors({
+//     origin: ['http://localhost:3001', 'http://localhost:3000'], 
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+//     credentials: true,
+// }));
 
 
 app.use(express.json());
@@ -28,6 +34,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/hunt', huntRoutes);
 app.use('/api/player', playerRoutes);
+app.use("/api/auth", authRoutes);
 
 // Connect to DB
 mongoose
