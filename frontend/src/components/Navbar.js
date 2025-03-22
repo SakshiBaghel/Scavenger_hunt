@@ -8,24 +8,52 @@ import { toast } from 'react-toastify'
 
 const  Navbar=()=> {
     const navigate =useNavigate()
-    const {userData,backendurl,setUserData,setIsLoggedin}=useContext(AppContext);
+    const {userData,backendUrl,setUserData,setIsLoggedin}=useContext(AppContext);
 
-    console.log("Navbar userData:", userData); 
 
-    const logout=async ()=>{
+    const sendVerificationOtp = async () => {
         try{
-            axios.defaults.withCredentials=true
-            const {data}=await axios.post(backendurl+'/api/auth/logout')
-            data.success && setIsLoggedin(false)
-            data.success && setUserData(false)
-            navigate('/')
+            axios.defaults.withCredentials = true;
+
+            const {data}=await axios.post(backendUrl+'/api/auth/send-verify-otp');
+            if(data.success){
+                navigate('/email-verify')
+                toast.success(data.message)
+            }
+            else{
+                toast.error(data.message)
+            }
 
         }catch(error){
-            toast.error(error.message)  
+            toast.error(error.message)
+
         }
 
-    }
 
+    }
+    
+
+
+    const logout = async () => {
+        try {
+            axios.defaults.withCredentials = true;
+            const response = await axios.post(backendUrl + '/api/auth/logout');
+    
+            console.log("Logout Response:", response.data); // Log response
+    
+            if (response.data.success) {
+                setIsLoggedin(false);
+                setUserData(null);
+                navigate('/');
+            } else {
+                toast.error("Logout failed: " + (response.data.message || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("Logout Error:", error);
+            toast.error(error.response?.data?.message || "Logout request failed");
+        }
+    };
+    
   return (
     <div>
         {/* <img src="" alt="" /> */}
@@ -34,7 +62,7 @@ const  Navbar=()=> {
             {userData.name[0].toUpperCase()}
             <div>
                 <ul>
-                    {!userData.isAccountVerified && <li>Verify Email</li>}
+                    {!userData.isAccountVerified && <li onClick={sendVerificationOtp}>Verify Email</li>}
                     
                     <li onClick={logout}>Logout</li>
                 </ul>

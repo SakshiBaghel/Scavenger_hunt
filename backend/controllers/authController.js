@@ -117,7 +117,7 @@ export const sendVerifyOtp=async(req,res)=>{
             from:process.env.SENDER_EMAIL,
             to:user.email,
             subject:'Account Verification OTP',
-            text:`Hi ${user.name},\n\nYour OTP for account verification is ${otp}`
+            text:`Hi , Your OTP for account verification is ${otp}`
 
         }
 
