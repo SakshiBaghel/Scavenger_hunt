@@ -1,47 +1,41 @@
-
-const Player = require('../models/playerModel');
-const Hunt = require('../models/huntModel');
-const mongoose = require('mongoose');
+const Player = require("../models/playerModel");
+const Hunt = require("../models/huntModel");
+const mongoose = require("mongoose");
+const cloudinary = require("cloudinary").v2; 
 
 // Create a new player and add them to the hunt's players array
 const createPlayer = async (req, res) => {
     try {
         let { user, hunt } = req.body;
 
-        // Validate Hunt ID
         if (!hunt || !mongoose.Types.ObjectId.isValid(hunt)) {
             return res.status(400).json({ message: "Invalid or missing Hunt ID" });
         }
 
-        // Validate User ID or Generate One
         if (!user) {
-            user = new mongoose.Types.ObjectId(); // Generate a new user ID if not provided
+            user = new mongoose.Types.ObjectId();
         } else if (!mongoose.Types.ObjectId.isValid(user)) {
             return res.status(400).json({ message: "Invalid User ID format" });
         }
 
-        // Convert to ObjectId
         user = new mongoose.Types.ObjectId(user);
         hunt = new mongoose.Types.ObjectId(hunt);
 
-        // Check if the player already exists in the hunt
         const existingPlayer = await Player.findOne({ user, hunt });
         if (existingPlayer) {
             return res.status(409).json({ message: "Player already joined this hunt", player: existingPlayer });
         }
 
-        // Create a new Player
         const newPlayer = new Player({
             user,
             hunt,
             progress: { completedPuzzles: 0, score: 0 },
-            status: 'playing',
-            guesses: []
+            status: "playing",
+            guesses: [],
         });
 
         await newPlayer.save();
 
-        // Add player to Hunt only if Hunt exists
         const updatedHunt = await Hunt.findByIdAndUpdate(
             hunt,
             { $push: { players: newPlayer._id } },
@@ -63,8 +57,6 @@ const createPlayer = async (req, res) => {
 const submitGuess = async (req, res) => {
     try {
         let { userId, huntId, puzzleIndex, imageUrl, hintUsed } = req.body;
-
-        console.log("Received Data:", req.body); // Debugging log
 
         if (!userId || !huntId || puzzleIndex === undefined || typeof imageUrl !== "string") {
             return res.status(400).json({ message: "Missing or invalid required fields" });
@@ -94,18 +86,43 @@ const submitGuess = async (req, res) => {
     }
 };
 
+// ✅ NEW FUNCTION: Upload Photo using Cloudinary
+const uploadPhoto = async (req, res) => {
+    try {
+        const { userId, huntId, puzzleIndex, hintUsed } = req.body;
+
+        if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+        const imageUrl = req.file.path; // Cloudinary URL
+
+        // Save the image submission in the Player model
+        const player = await Player.findOne({ user: userId, hunt: huntId });
+
+        if (!player) {
+            return res.status(404).json({ message: "Player not found in this hunt" });
+        }
+
+        player.guesses.push({ puzzleIndex, imageUrl, hintUsed });
+
+        await player.save();
+
+        res.json({ message: "Photo submitted successfully!", imageUrl });
+    } catch (error) {
+        console.error("Upload error:", error);
+        res.status(500).json({ message: "Error uploading photo" });
+    }
+};
+
 const updateAction = async (req, res) => {
     const { userId, huntId, status } = req.body;
 
     try {
-        // Find the player using userId and huntId
         const player = await Player.findOne({ user: userId, hunt: huntId });
 
         if (!player) {
             return res.status(404).json({ error: "Player not found" });
         }
 
-        // Find the latest guess (last puzzle attempted)
         const lastGuess = player.guesses[player.guesses.length - 1];
 
         if (!lastGuess) {
@@ -113,29 +130,25 @@ const updateAction = async (req, res) => {
         }
 
         if (status === "correct") {
-            // Calculate score (10 - 2 * hintsUsed)
-            const earnedScore = Math.max(10 - (2 * lastGuess.hintUsed), 0);
+            const earnedScore = Math.max(10 - 2 * lastGuess.hintUsed, 0);
 
-            // Update progress
             player.progress.completedPuzzles += 1;
             player.progress.score += earnedScore;
 
-            // Save the updated player data
             await player.save();
 
             return res.json({
                 message: "Answer marked correct, progress updated",
                 completedPuzzles: player.progress.completedPuzzles,
-                totalScore: player.progress.score
+                totalScore: player.progress.score,
             });
         } else {
-            // If wrong, do nothing
             return res.json({ message: "Answer marked wrong, no changes made" });
         }
     } catch (error) {
         console.error("Error updating player progress:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-}
+};
 
-module.exports = { createPlayer, submitGuess, updateAction};
+module.exports = { createPlayer, submitGuess, updateAction, uploadPhoto };

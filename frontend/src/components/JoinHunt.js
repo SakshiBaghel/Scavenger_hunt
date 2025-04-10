@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -10,8 +9,9 @@ const JoinHunt = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showHints, setShowHints] = useState({});
-    const [answers, setAnswers] = useState({});
     const [hintsUsed, setHintsUsed] = useState({});
+    const [selectedImages, setSelectedImages] = useState({});
+    const [uploadedImages, setUploadedImages] = useState({});
 
     useEffect(() => {
         axios.get(`http://localhost:4000/api/hunt/${huntId}`)
@@ -37,28 +37,43 @@ const JoinHunt = () => {
         }));
     };
 
-    const handleAnswerChange = (puzzleIndex, value) => {
-        setAnswers(prev => ({
-            ...prev,
-            [puzzleIndex]: value
-        }));
+    const handleFileChange = (puzzleIndex, event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setSelectedImages(prev => ({
+                ...prev,
+                [puzzleIndex]: file
+            }));
+        }
     };
 
     const handleSubmit = async (puzzleIndex) => {
+        if (!selectedImages[puzzleIndex]) {
+            alert("Please select an image before submitting.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("photo", selectedImages[puzzleIndex]);
+        formData.append("userId", dummyUserId);
+        formData.append("huntId", huntId);
+        formData.append("puzzleIndex", puzzleIndex);
+        formData.append("hintUsed", hintsUsed[puzzleIndex] || 0);
+
         try {
-            const answer = answers[puzzleIndex] || ""; 
-            const response = await axios.post("http://localhost:4000/api/player/submitGuess", {
-                userId: dummyUserId,
-                huntId,
-                puzzleIndex,
-                imageUrl: answer,
-                hintUsed: hintsUsed[puzzleIndex]
+            const response = await axios.post("http://localhost:4000/api/player/uploadPhoto", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
             });
+
+            setUploadedImages(prev => ({
+                ...prev,
+                [puzzleIndex]: response.data.imageUrl
+            }));
 
             alert(response.data.message);
         } catch (error) {
-            console.error("Error submitting answer:", error);
-            alert("Failed to submit answer");
+            console.error("Error submitting photo:", error);
+            alert("Failed to upload photo");
         }
     };
 
@@ -97,12 +112,31 @@ const JoinHunt = () => {
                     <p>Hints Used: {hintsUsed[puzzleIndex] || 0}</p> 
                     <div style={{ marginTop: "10px" }}>
                         <input 
-                            type="text" 
-                            placeholder="Enter your answer" 
-                            value={answers[puzzleIndex] || ""} 
-                            onChange={(e) => handleAnswerChange(puzzleIndex, e.target.value)} 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(puzzleIndex, e)}
                         />
-                        <button onClick={() => handleSubmit(puzzleIndex)}>Submit Answer</button>
+                        {selectedImages[puzzleIndex] && (
+                            <div>
+                                <p>Selected Image: {selectedImages[puzzleIndex].name}</p>
+                                <img 
+                                    src={URL.createObjectURL(selectedImages[puzzleIndex])} 
+                                    alt="Preview" 
+                                    style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "5px" }}
+                                />
+                            </div>
+                        )}
+                        <button onClick={() => handleSubmit(puzzleIndex)}>Upload & Submit</button>
+                        {uploadedImages[puzzleIndex] && (
+                            <div>
+                                <p>Uploaded Image:</p>
+                                <img 
+                                    src={uploadedImages[puzzleIndex]} 
+                                    alt="Submitted" 
+                                    style={{ width: "150px", height: "150px", objectFit: "cover", marginTop: "5px" }}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             ))}
