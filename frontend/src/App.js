@@ -3,6 +3,11 @@ import { BrowserRouter, Routes, Route} from 'react-router-dom'
 //pages and component
 
 import Home from './pages/Home'
+import Login from './pages/Login'
+import EmailVerify from './pages/EmailVerify'
+import ResetPassword from './pages/ResetPassword'
+import { ToastContainer } from 'react-toastify';
+
 import CreateHunt from './pages/CreateHunt'
 import LiveHunt from './pages/LiveHunt'
 import UpcomingHunt from './pages/UpcomingHunt'
@@ -16,8 +21,13 @@ function App() {
     <div className="App">
       <BrowserRouter>
       <div className="pages">
+      <ToastContainer />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/email-verify" element={<EmailVerify />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
           <Route path="/CreateHunt" element={<CreateHunt />} />
           <Route path="/LiveHunt" element={<LiveHunt />} />
           <Route path="/UpcomingHunt" element={<UpcomingHunt />} />
