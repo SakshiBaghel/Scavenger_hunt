@@ -159,6 +159,7 @@ import cloudinary from "cloudinary";
 import Player from "../models/playerModel.js";
 import Hunt from "../models/huntModel.js";
 
+
 // Create a new player and add them to the hunt's players array
 export const createPlayer = async (req, res) => {
     try {
@@ -268,40 +269,101 @@ export const uploadPhoto = async (req, res) => {
     }
 };
 
+
+// export const updateAction = async (req, res) => {
+//     try {
+//         const { userId, huntId, status } = req.body;
+    
+//         // Validate input
+//         if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
+//           return res.status(400).json({ error: "Invalid userId or huntId" });
+//         }
+    
+//         const player = await Player.findOne({
+//           userId: new mongoose.Types.ObjectId(userId),
+//           huntId: new mongoose.Types.ObjectId(huntId),
+//         });
+    
+//         if (!player) {
+//           return res.status(404).json({ error: "Player not found" });
+//         }
+    
+//         player.status = status;
+//         await player.save();
+    
+//         res.status(200).json({ message: "Player status updated successfully", player });
+//       } catch (error) {
+//         console.error("Error updating player:", error);
+//         res.status(500).json({ error: "Something went wrong" });
+//       }
+// };
+
+
+// export const updateAction = async (req, res) => {
+//     try {
+//       const { userId, huntId, status, hintUsed } = req.body;
+  
+//       if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
+//         return res.status(400).json({ error: "Invalid userId or huntId" });
+//       }
+  
+//       const player = await Player.findOne({
+//         user: userId,
+//         hunt: huntId,
+//       });
+  
+//       if (!player) {
+//         return res.status(404).json({ error: "Player not found" });
+//       }
+  
+//       player.status = status;
+//       await player.save();
+  
+//       res.status(200).json({ message: "Player status updated successfully", player });
+//     } catch (error) {
+//       console.error("Error updating player:", error);
+//       res.status(500).json({ error: "Something went wrong" });
+//     }
+//   };
+  
+
 export const updateAction = async (req, res) => {
-    const { userId, huntId, status } = req.body;
-
     try {
-        const player = await Player.findOne({ user: userId, hunt: huntId });
-
-        if (!player) {
-            return res.status(404).json({ error: "Player not found" });
-        }
-
-        const lastGuess = player.guesses[player.guesses.length - 1];
-
-        if (!lastGuess) {
-            return res.status(400).json({ error: "No guesses found" });
-        }
-
-        if (status === "correct") {
-            const earnedScore = Math.max(10 - 2 * lastGuess.hintUsed, 0);
-
-            player.progress.completedPuzzles += 1;
-            player.progress.score += earnedScore;
-
-            await player.save();
-
-            return res.json({
-                message: "Answer marked correct, progress updated",
-                completedPuzzles: player.progress.completedPuzzles,
-                totalScore: player.progress.score,
-            });
-        } else {
-            return res.json({ message: "Answer marked wrong, no changes made" });
-        }
+      const { userId, huntId, status, isCorrect, hintUsed } = req.body;
+  
+      if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
+        return res.status(400).json({ error: "Invalid userId or huntId" });
+      }
+  
+      const player = await Player.findOne({
+        user: userId,
+        hunt: huntId,
+      });
+  
+      if (!player) {
+        return res.status(404).json({ error: "Player not found" });
+      }
+  
+      // Update score based on correctness and hintUsed
+      if (isCorrect) {
+        const earnedScore = Math.max(0, 10 - 2 * hintUsed);
+        player.progress.score += earnedScore;
+      }
+  
+      // Optionally update player status if needed
+      if (status) {
+        player.status = status;
+      }
+  
+      await player.save();
+  
+      res.status(200).json({
+        message: "Player updated successfully",
+        player
+      });
     } catch (error) {
-        console.error("Error updating player progress:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+      console.error("Error updating player:", error);
+      res.status(500).json({ error: "Something went wrong" });
     }
-};
+  };
+  

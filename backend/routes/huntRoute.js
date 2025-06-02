@@ -78,10 +78,22 @@ import {
   submissions,
 } from "../controllers/huntController.js";
 
+import userAuth from "../middleware/userAuth.js"; // Import the middleware
+
+
 const router = express.Router();
 
 // Debugging middleware (Log request data)
-router.post("/createHunt", async (req, res, next) => {
+// router.post("/createHunt", async (req, res, next) => {
+//   try {
+//     console.log("Request received:", req.body);
+//     await createHunt(req, res);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
+router.post("/createHunt", userAuth, async (req, res, next) => {
   try {
     console.log("Request received:", req.body);
     await createHunt(req, res);
@@ -89,6 +101,7 @@ router.post("/createHunt", async (req, res, next) => {
     next(error);
   }
 });
+
 
 router.get("/liveHunts", async (req, res, next) => {
   try {

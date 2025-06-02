@@ -284,37 +284,73 @@ import mongoose from 'mongoose';
 import Hunt from '../models/huntModel.js';
 import Player from '../models/playerModel.js';
 
+// const createHunt = async (req, res) => {
+//     try {
+//         const { name, description, startTime, endTime, puzzle, createdBy } = req.body;
+
+//         if (!name || !description || !startTime || !endTime || !Array.isArray(puzzle)) {
+//             return res.status(400).json({ message: "All required fields must be provided, and puzzle must be an array." });
+//         }
+
+//         const existingHunt = await Hunt.findOne({ name });
+//         if (existingHunt) {
+//             return res.status(400).json({ message: "A hunt with this name already exists." });
+//         }
+
+//         const newHunt = new Hunt({
+//             name,
+//             description,
+//             startTime,
+//             endTime,
+//             puzzle,
+//             createdBy: createdBy || null,
+//             players: [],
+//             leaderboard: []
+//         });
+
+//         await newHunt.save();
+//         res.status(201).json({ message: "Hunt created successfully!", hunt: newHunt });
+//     } catch (error) {
+//         console.error("Error in createHunt:", error);
+//         res.status(500).json({ message: "Server error", error: error.message });
+//     }
+// };
+
 const createHunt = async (req, res) => {
     try {
-        const { name, description, startTime, endTime, puzzle, createdBy } = req.body;
-
-        if (!name || !description || !startTime || !endTime || !Array.isArray(puzzle)) {
-            return res.status(400).json({ message: "All required fields must be provided, and puzzle must be an array." });
-        }
-
-        const existingHunt = await Hunt.findOne({ name });
-        if (existingHunt) {
-            return res.status(400).json({ message: "A hunt with this name already exists." });
-        }
-
-        const newHunt = new Hunt({
-            name,
-            description,
-            startTime,
-            endTime,
-            puzzle,
-            createdBy: createdBy || null,
-            players: [],
-            leaderboard: []
-        });
-
-        await newHunt.save();
-        res.status(201).json({ message: "Hunt created successfully!", hunt: newHunt });
+      const { name, description, startTime, endTime, puzzle, userId } = req.body;
+  
+      if (!name || !description || !startTime || !endTime || !Array.isArray(puzzle)) {
+        return res.status(400).json({ message: "All required fields must be provided, and puzzle must be an array." });
+      }
+  
+      const existingHunt = await Hunt.findOne({ name });
+      if (existingHunt) {
+        return res.status(400).json({ message: "A hunt with this name already exists." });
+      }
+  
+      const newHunt = new Hunt({
+        name,
+        description,
+        startTime,
+        endTime,
+        puzzle,
+        createdBy: userId, // ← Now using userId from middleware
+        players: [],
+        leaderboard: [],
+      });
+  
+      await newHunt.save();
+  
+      res.status(201).json({ message: "Hunt created successfully!", hunt: newHunt });
     } catch (error) {
-        console.error("Error in createHunt:", error);
-        res.status(500).json({ message: "Server error", error: error.message });
+      console.error("Error in createHunt:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
     }
-};
+  };
+  
+
+  
 
 const getLiveHunts = async (req, res) => {
     try {
