@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route} from 'react-router-dom'
+import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 
 //pages and component
 
-import Home from './pages/Home'
+import {Home} from './pages/Home'
 import Login from './pages/Login'
 import EmailVerify from './pages/EmailVerify'
 import ResetPassword from './pages/ResetPassword'
@@ -20,6 +22,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
+      <Navbar/>
       <div className="pages">
       <ToastContainer />
         <Routes>
@@ -37,6 +40,7 @@ function App() {
           <Route path="/yourHunt/:userId/CheckSubmission/:huntId" element={<CheckSubmission />} />
         </Routes>
       </div>
+      <Footer/>
       </BrowserRouter>
     
     </div>
