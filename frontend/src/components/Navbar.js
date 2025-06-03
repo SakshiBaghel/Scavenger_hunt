@@ -32,8 +32,6 @@ const  Navbar=()=> {
 
     }
     
-
-
     const logout = async () => {
         try {
             axios.defaults.withCredentials = true;

@@ -28,31 +28,6 @@ const CheckSubmission = () => {
         fetchSubmissions();
     }, [huntId]);
 
-    // const updateSubmission = async (submissionId, isCorrect, hintsUsed) => {
-    //     const newStatus = isCorrect ? "Correct" : "Wrong";
-    //     const score = isCorrect ? Math.max(0, 10 - 2 * hintsUsed) : null; // ✅ null for "Wrong"
-    //     console.log("score: ", score)
-
-    //     try {
-    //         await axios.put(`http://localhost:4000/api/player/updateAction`, {
-    //             userId: submissionId,
-    //             huntId,
-    //             status: newStatus,
-    //             score: score,
-    //         });
-
-    //         setSubmissions((prevSubmissions) =>
-    //             prevSubmissions.map((sub) =>
-    //                 sub._id === submissionId
-    //                     ? { ...sub, status: newStatus, score: score }
-    //                     : sub
-    //             )
-    //         );
-    //     } catch (error) {
-    //         console.error("Failed to update submission:", error);
-    //         setError("Failed to update submission. Please try again.");
-    //     }
-    // };
 
     const updateSubmission = async (submissionId, isCorrect, hintsUsed) => {
         const newStatus = isCorrect ? "Correct" : "Wrong";

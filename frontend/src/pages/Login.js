@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import App from '../App'
+// import App from '../App'
 import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -38,8 +38,6 @@ const onSubmitHandler = async(e)=>{
       }else{
         toast.error(data.message)
       }
-
-
 
     }
 
@@ -86,8 +84,7 @@ const onSubmitHandler = async(e)=>{
 
       </p>
 )}
-     
-      
+
 
     </div>
   )
