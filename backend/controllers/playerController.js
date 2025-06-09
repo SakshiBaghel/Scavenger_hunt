@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // import cloudinary from "cloudinary";
 import Player from "../models/playerModel.js";
 import Hunt from "../models/huntModel.js";
-
+import User from "../models/userModel.js"; 
 
 // Create a new player and add them to the hunt's players array
 export const createPlayer = async (req, res) => {
@@ -115,63 +115,6 @@ export const uploadPhoto = async (req, res) => {
 };
 
 
-// export const updateAction = async (req, res) => {
-//     try {
-//         const { userId, huntId, status } = req.body;
-    
-//         // Validate input
-//         if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
-//           return res.status(400).json({ error: "Invalid userId or huntId" });
-//         }
-    
-//         const player = await Player.findOne({
-//           userId: new mongoose.Types.ObjectId(userId),
-//           huntId: new mongoose.Types.ObjectId(huntId),
-//         });
-    
-//         if (!player) {
-//           return res.status(404).json({ error: "Player not found" });
-//         }
-    
-//         player.status = status;
-//         await player.save();
-    
-//         res.status(200).json({ message: "Player status updated successfully", player });
-//       } catch (error) {
-//         console.error("Error updating player:", error);
-//         res.status(500).json({ error: "Something went wrong" });
-//       }
-// };
-
-
-// export const updateAction = async (req, res) => {
-//     try {
-//       const { userId, huntId, status, hintUsed } = req.body;
-  
-//       if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
-//         return res.status(400).json({ error: "Invalid userId or huntId" });
-//       }
-  
-//       const player = await Player.findOne({
-//         user: userId,
-//         hunt: huntId,
-//       });
-  
-//       if (!player) {
-//         return res.status(404).json({ error: "Player not found" });
-//       }
-  
-//       player.status = status;
-//       await player.save();
-  
-//       res.status(200).json({ message: "Player status updated successfully", player });
-//     } catch (error) {
-//       console.error("Error updating player:", error);
-//       res.status(500).json({ error: "Something went wrong" });
-//     }
-//   };
-  
-
 export const updateAction = async (req, res) => {
     try {
       const { userId, huntId, status, isCorrect, hintUsed } = req.body;
@@ -211,4 +154,46 @@ export const updateAction = async (req, res) => {
       res.status(500).json({ error: "Something went wrong" });
     }
   };
-  
+
+
+
+export const getSubmissions = async (req, res) => {
+    try {
+        const { huntId } = req.params;
+        console.log("➡️ Received Hunt ID:", huntId);
+
+        const players = await Player.find({ hunt: huntId });
+        console.log("👥 Players Found:", players.length);
+
+        if (players.length === 0) {
+            return res.status(404).json({ message: "No players found for this hunt." });
+        }
+
+        const userIds = players.map(player => player.user);
+        console.log("🆔 User IDs:", userIds);
+
+        const users = await User.find({ _id: { $in: userIds } }, "_id name");
+        console.log("✅ Users Found:", users);
+
+        const userMap = new Map();
+        users.forEach(user => userMap.set(user._id.toString(), user.name));
+
+        const submissions = players.flatMap(player =>
+            player.guesses.map(guess => ({
+                userName: userMap.get(player.user.toString()) || "Invalid User",
+                userId: player.user,
+                puzzleIndex: guess.puzzleIndex,
+                imageUrl: guess.imageUrl,
+                hintUsed: guess.hintUsed,
+                _id: guess._id
+            }))
+        );
+
+        console.log("📦 Submissions:", submissions.length);
+        res.json({ submissions });
+
+    } catch (error) {
+        console.error("❌ Error in getSubmissions:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};

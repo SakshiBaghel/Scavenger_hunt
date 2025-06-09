@@ -17,6 +17,7 @@ const CheckSubmission = () => {
 
             try {
                 const response = await axios.get(`http://localhost:4000/api/player/submissions/${huntId}`);
+                console.log("huntId", huntId)
                 setSubmissions(response.data.submissions);
             } catch (err) {
                 setError("Failed to fetch submissions. Please check the Hunt ID.");
@@ -91,7 +92,7 @@ const CheckSubmission = () => {
                     ) : (
                         submissions.map((submission) => (
                             <tr key={submission._id} className="text-center">
-                                <td className="border p-2">{submission.userId}</td>
+                                <td className="border p-2">{submission.userName}</td>
                                 <td className="border p-2">{submission.puzzleIndex}</td>
                                 <td className="border p-2">
                                     <img
