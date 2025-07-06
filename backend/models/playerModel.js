@@ -27,9 +27,6 @@ const playerSchema = new mongoose.Schema({
                 type: Number, 
                 required: true 
             }, 
-            guessedLocation: {
-                coordinates: { type: [Number], required: false } 
-            },
             imageUrl: {
                 type: String,
                 default: ""
@@ -37,6 +34,11 @@ const playerSchema = new mongoose.Schema({
             hintUsed: {
                 type: Number,
                 default: 0
+            },
+            status: {
+                type: String,
+                enum: ['NotAnswered','Correct', 'Wrong', 'Pending'],
+                default: 'NotAnswered'
             }
         }
     ]

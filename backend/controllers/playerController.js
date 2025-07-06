@@ -115,46 +115,91 @@ export const uploadPhoto = async (req, res) => {
 };
 
 
-export const updateAction = async (req, res) => {
-    try {
-      const { userId, huntId, status, isCorrect, hintUsed } = req.body;
+// export const updateAction = async (req, res) => {
+//     try {
+//       const { userId, huntId, status, isCorrect, hintUsed } = req.body;
   
-      if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
-        return res.status(400).json({ error: "Invalid userId or huntId" });
-      }
+//       if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
+//         return res.status(400).json({ error: "Invalid userId or huntId" });
+//       }
   
-      const player = await Player.findOne({
-        user: userId,
-        hunt: huntId,
-      });
+//       const player = await Player.findOne({
+//         user: userId,
+//         hunt: huntId,
+//       });
   
-      if (!player) {
-        return res.status(404).json({ error: "Player not found" });
-      }
+//       if (!player) {
+//         return res.status(404).json({ error: "Player not found" });
+//       }
   
-      // Update score based on correctness and hintUsed
-      if (isCorrect) {
-        const earnedScore = Math.max(0, 10 - 2 * hintUsed);
-        player.progress.score += earnedScore;
-      }
+//       // Update score based on correctness and hintUsed
+//       if (isCorrect) {
+//         const earnedScore = Math.max(0, 10 - 2 * hintUsed);
+//         player.progress.score += earnedScore;
+//       }
   
-      // Optionally update player status if needed
-      if (status) {
-        player.status = status;
-      }
+//       // Optionally update player status if needed
+//       if (status) {
+//         player.status = status;
+//       }
   
-      await player.save();
+//       await player.save();
   
-      res.status(200).json({
-        message: "Player updated successfully",
-        player
-      });
-    } catch (error) {
-      console.error("Error updating player:", error);
-      res.status(500).json({ error: "Something went wrong" });
-    }
-  };
+//       res.status(200).json({
+//         message: "Player updated successfully",
+//         player
+//       });
+//     } catch (error) {
+//       console.error("Error updating player:", error);
+//       res.status(500).json({ error: "Something went wrong" });
+//     }
+//   };
 
+
+export const updateAction = async (req, res) => {
+  try {
+    const { userId, huntId, status, isCorrect, hintUsed, puzzleIndex } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(huntId)) {
+      return res.status(400).json({ error: "Invalid userId or huntId" });
+    }
+
+    const player = await Player.findOne({
+      user: userId,
+      hunt: huntId,
+    });
+
+    if (!player) {
+      return res.status(404).json({ error: "Player not found" });
+    }
+
+    // Find the specific guess by puzzleIndex
+    const guess = player.guesses.find(g => g.puzzleIndex === puzzleIndex);
+
+    if (!guess) {
+      return res.status(404).json({ error: "Guess for this puzzleIndex not found" });
+    }
+
+    // Update the status
+    guess.status = status;
+
+    // Update score if correct
+    if (isCorrect) {
+      const earnedScore = Math.max(0, 10 - 2 * hintUsed);
+      player.progress.score += earnedScore;
+    }
+
+    await player.save();
+
+    res.status(200).json({
+      message: "Player updated successfully",
+      player
+    });
+  } catch (error) {
+    console.error("Error updating player:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
 
 
 export const getSubmissions = async (req, res) => {
@@ -194,6 +239,58 @@ export const getSubmissions = async (req, res) => {
 
     } catch (error) {
         console.error("❌ Error in getSubmissions:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+
+export const getProgress = async (req, res) => {
+    const { userId, huntId } = req.params;
+
+    try {
+        const player = await Player.findOne({ user: userId, hunt: huntId });
+
+        if (!player) {
+            return res.status(404).json({ message: "Player not found" });
+        }
+
+        const priority = { Correct: 3, Pending: 2, Wrong: 1, NotAnswered: 0 };
+        const bestGuessesMap = {};
+
+        // Group and pick best guess per puzzleIndex
+        for (const g of player.guesses) {
+            const index = g.puzzleIndex;
+            const score = g.status === "Correct" ? Math.max(0, 10 - 2 * (g.hintUsed || 0)) : 0;
+            const guessData = {
+                puzzleIndex: index,
+                imageUrl: g.imageUrl,
+                hintUsed: g.hintUsed || 0,
+                status: g.status || "Pending",
+                score
+            };
+
+            if (
+                !bestGuessesMap[index] ||
+                priority[guessData.status] > priority[bestGuessesMap[index].status]
+            ) {
+                bestGuessesMap[index] = guessData;
+            }
+        }
+
+        const filteredGuesses = Object.values(bestGuessesMap);
+
+        const totalScore = filteredGuesses.reduce((acc, g) => acc + (g.score || 0), 0);
+        const completedPuzzles = filteredGuesses.filter(g => g.status === "Correct").length;
+
+        res.json({
+            playerId: player._id,
+            totalScore,
+            completedPuzzles,
+            guesses: filteredGuesses
+        });
+    } catch (err) {
+        console.error("Error fetching progress:", err);
         res.status(500).json({ message: "Server error" });
     }
 };
