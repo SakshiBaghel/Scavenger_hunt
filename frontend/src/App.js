@@ -11,9 +11,11 @@ import { ToastContainer } from 'react-toastify';
 import CreateHunt from './pages/CreateHunt'
 import LiveHunt from './pages/LiveHunt'
 import UpcomingHunt from './pages/UpcomingHunt'
+import PrevHunt from './pages/PrevHunt'
 import JoinHunt from './components/JoinHunt'
 import YourHunt from './pages/YourHunt'
 import CheckSubmission from './pages/CheckSubmission'
+import Leaderboard from './pages/Leaderboard'
 
 
 function App() {
@@ -31,10 +33,11 @@ function App() {
           <Route path="/CreateHunt" element={<CreateHunt />} />
           <Route path="/LiveHunt" element={<LiveHunt />} />
           <Route path="/UpcomingHunt" element={<UpcomingHunt />} />
+          <Route path="/PrevHunt" element={<PrevHunt />} />
           <Route path="/JoinHunt/:huntId" element={<JoinHunt />} />
           <Route path="/YourHunt/:userId" element={<YourHunt />} />
-          {/* <Route path="/CheckSubmission/:huntId" element={<CheckSubmission />} /> */}
           <Route path="/yourHunt/:userId/CheckSubmission/:huntId" element={<CheckSubmission />} />
+          <Route path="/Leaderboard/:huntId" element={<Leaderboard />} />
         </Routes>
       </div>
       </BrowserRouter>

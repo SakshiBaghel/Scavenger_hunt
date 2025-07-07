@@ -165,6 +165,29 @@ function YourHunt() {
   const handleCheckSubmission = (huntId) => {
     navigate(`CheckSubmission/${huntId}`);
   };
+  // const handleUpdateLeaderBoard = (huntId) => {
+  //   // navigate(`CheckSubmission/${huntId}`);
+  // };
+
+  const handleUpdateLeaderBoard = async (huntId) => {
+  try {
+    const response = await fetch(`http://localhost:4000/api/hunt/updateLeaderboards/${huntId}`, {
+      method: "POST",
+      credentials: "include", // if auth cookie is needed
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Leaderboard updated successfully!");
+      console.log("Updated leaderboard:", data.leaderboard);
+    } else {
+      alert(data.message || "Failed to update leaderboard");
+    }
+  } catch (error) {
+    alert("Error updating leaderboard: " + error.message);
+  }
+};
 
   return (
     <div>
@@ -180,6 +203,7 @@ function YourHunt() {
             <p>Start Time: {new Date(hunt.startTime).toLocaleString()}</p>
             <p>End Time: {new Date(hunt.endTime).toLocaleString()}</p>
             <button onClick={() => handleCheckSubmission(hunt._id)}>Check Submission</button>
+            <button onClick={() => handleUpdateLeaderBoard(hunt._id)}>Update LeaderBoard</button>
           </li>
         ))}
       </ul>

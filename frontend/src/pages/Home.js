@@ -108,6 +108,7 @@ function Homepage() {
   const handleCreateHuntClick = () => navigate('/createHunt');
   const handleLiveHuntClick = () => navigate('/liveHunt');
   const handleUpcomingHuntClick = () => navigate('/upcomingHunt');
+  const handlePrevHuntClick = () => navigate('/PrevHunt');
 
   const handleYourHuntClick = () => {
     if (userData && userData._id) {
@@ -123,6 +124,7 @@ function Homepage() {
       <button onClick={handleCreateHuntClick}>Create Hunt</button>
       <button onClick={handleLiveHuntClick}>Live Hunt</button>
       <button onClick={handleUpcomingHuntClick}>Upcoming Hunt</button>
+      <button onClick={handlePrevHuntClick}>Previous Hunt</button>
 
       {isLoggedin && (
         <button onClick={handleYourHuntClick}>Your Hunt</button>

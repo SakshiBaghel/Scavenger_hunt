@@ -9,26 +9,49 @@ const huntSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // startTime: {
+    //     type: Date,
+    //     required: true,
+    //     validate: {
+    //         validator: function (value){
+    //             return value > new Date();
+    //         },
+    //         message: "START TIME MUST BE IN FUTURE"
+    //     }
+    // },
+    // endTime: {
+    //     type: Date,
+    //     required: true,
+    //     validate: {
+    //         validator: function (value) {
+    //             return this.startTime < value;
+    //         },
+    //         message: "END TIME MUST BE GREATER THAN THE CURRENT START TIME"
+    //     }
+    // },
+
     startTime: {
-        type: Date,
-        required: true,
-        validate: {
-            validator: function (value){
-                return value > new Date();
-            },
-            message: "START TIME MUST BE IN FUTURE"
-        }
-    },
-    endTime: {
-        type: Date,
-        required: true,
-        validate: {
-            validator: function (value) {
-                return this.startTime < value;
-            },
-            message: "END TIME MUST BE GREATER THAN THE CURRENT START TIME"
-        }
-    },
+    type: Date,
+    required: true,
+    validate: {
+        validator: function (value) {
+            // Only validate on new documents
+            return this.isNew ? value > new Date() : true;
+        },
+        message: "START TIME MUST BE IN FUTURE"
+    }
+},
+endTime: {
+    type: Date,
+    required: true,
+    validate: {
+        validator: function (value) {
+            return value > this.startTime;
+        },
+        message: "END TIME MUST BE GREATER THAN THE CURRENT START TIME"
+    }
+},
+
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -40,13 +63,13 @@ const huntSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
-            location: {
-                coordinates: {
-                    type: [Number],
-                    default: undefined, 
-                    required: false 
-                }
-            },
+            // location: {
+            //     coordinates: {
+            //         type: [Number],
+            //         default: undefined, 
+            //         required: false 
+            //     }
+            // },
             hints: [
                 {
                     hint: {

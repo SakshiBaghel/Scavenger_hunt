@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import Hunt from '../models/huntModel.js';
 import Player from '../models/playerModel.js';
+import User from "../models/userModel.js";
 
 
 const createHunt = async (req, res) => {
@@ -87,6 +88,29 @@ const getUpcomingHunts = async (req, res) => {
     }
 };
 
+const getPreviousHunts = async (req, res) => {
+  try {
+    const currentTime = new Date();
+    const previousHunts = await Hunt.find({
+      endTime: { $lt: currentTime }
+    }).select("name description startTime endTime puzzle");
+
+    const formattedHunts = previousHunts.map(hunt => ({
+      _id: hunt._id,
+      name: hunt.name,
+      description: hunt.description,
+      startTime: hunt.startTime,
+      endTime: hunt.endTime,
+      puzzleCount: Array.isArray(hunt.puzzle) ? hunt.puzzle.length : 0
+    }));
+
+    res.json(formattedHunts);
+  } catch (error) {
+    console.error("Error fetching previous hunts:", error);
+    res.status(500).json({ message: "Error fetching previous hunts", error: error.message });
+  }
+};
+
 const displayPuzzle = async (req, res) => {
     try {
         const hunt = await Hunt.findById(req.params.huntId);
@@ -152,11 +176,97 @@ const submissions = async (req, res) => {
     }
 };
 
+
+// const getLeaderboard = async (req, res) => {
+//   try {
+//     const { huntId } = req.params;
+//     const hunt = await Hunt.findById(huntId).populate("leaderboard.user", "name");
+
+//     if (!hunt) {
+//       return res.status(404).json({ message: "Hunt not found" });
+//     }
+
+//     res.json(hunt.leaderboard);
+//   } catch (error) {
+//     console.error("Error fetching leaderboard:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+const getLeaderboard = async (req, res) => {
+  try {
+    const { huntId } = req.params;
+
+    const hunt = await Hunt.findById(huntId).populate({
+      path: "leaderboard.user",
+      model: "user", // <== Fix: match the registered model name
+      select: "name"
+    });
+
+    if (!hunt) {
+      return res.status(404).json({ message: "Hunt not found" });
+    }
+
+    res.json(hunt.leaderboard);
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+const updateLeaderboards = async (req, res) => {
+  try {
+    const { huntId } = req.params;
+
+    const hunt = await Hunt.findById(huntId);
+    if (!hunt) return res.status(404).json({ message: "Hunt not found" });
+
+    // Check if hunt has ended
+    if (new Date(hunt.endTime) > new Date()) {
+      return res.status(400).json({ message: "Hunt has not ended yet" });
+    }
+
+    // Fetch all players of the hunt
+    // const players = await Player.find({ hunt: huntId }).populate("user", "name");
+    const players = await Player.find({ hunt: huntId }).populate({
+  path: "user",
+  model: "user", // match the lowercase
+  select: "name"
+});
+
+
+    const leaderboard = players.map(player => ({
+      user: player.user._id,
+      score: player.progress.score,
+      timeCompleted: player.updatedAt // Or a specific "completedTime" if tracked
+    }));
+
+    // Sort by score descending, then by earliest timeCompleted
+    leaderboard.sort((a, b) =>
+      b.score !== a.score
+        ? b.score - a.score
+        : new Date(a.timeCompleted) - new Date(b.timeCompleted)
+    );
+
+    hunt.leaderboard = leaderboard;
+    await hunt.save();
+
+    res.json({ message: "Leaderboard updated", leaderboard });
+  } catch (error) {
+    console.error("❌ Error in updateLeaderboards:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 export {
   createHunt,
   getLiveHunts,
   getUpcomingHunts,
   displayPuzzle,
   yourHunt,
-  submissions
+  submissions,
+  getLeaderboard,
+  updateLeaderboards,
+  getPreviousHunts
 };
