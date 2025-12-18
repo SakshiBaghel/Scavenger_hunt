@@ -16,6 +16,7 @@ import JoinHunt from './components/JoinHunt'
 import YourHunt from './pages/YourHunt'
 import CheckSubmission from './pages/CheckSubmission'
 import Leaderboard from './pages/Leaderboard'
+import Dashboard from './pages/Dashboard'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
       <div className="pages">
+
       <ToastContainer />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -34,6 +36,7 @@ function App() {
           <Route path="/LiveHunt" element={<LiveHunt />} />
           <Route path="/UpcomingHunt" element={<UpcomingHunt />} />
           <Route path="/PrevHunt" element={<PrevHunt />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/JoinHunt/:huntId" element={<JoinHunt />} />
           <Route path="/YourHunt/:userId" element={<YourHunt />} />
           <Route path="/yourHunt/:userId/CheckSubmission/:huntId" element={<CheckSubmission />} />
